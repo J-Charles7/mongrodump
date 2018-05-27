@@ -3,6 +3,7 @@ docs.json
 __dummy.html
 docs/
 mongrodump
+!source/mongrodump
 mongrodump.so
 mongrodump.dylib
 mongrodump.dll
