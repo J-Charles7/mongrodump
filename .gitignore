@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+mongrodump
+mongrodump.so
+mongrodump.dylib
+mongrodump.dll
+mongrodump.a
+mongrodump.lib
+mongrodump-test-*
+*.exe
+*.o
+*.obj
+*.lst
+dub.selections.json

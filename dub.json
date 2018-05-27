@@ -1,0 +1,13 @@
+{
+    "name": "mongrodump",
+    "authors": [
+        "Cédric Picard"
+    ],
+    "dependencies": {
+        "requests": "~>0.8.0",
+        "pegged":   "~>0.4.3"
+    },
+    "description": "MongoDB Exploitation Tool",
+    "copyright": "Copyright © 2018, Cédric Picard",
+    "license": "GPLv3"
+}
