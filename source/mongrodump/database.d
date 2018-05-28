@@ -24,7 +24,8 @@ class Database {
     /** Number of collections existing in the database */
     ulong getCollectionNumber(ulong maxNumber=10_000) {
         if (collectionNumber == 0) {
-            oracle.getValue("db.getCollectionNames().length", 0, maxNumber);
+            collectionNumber = oracle.getValue("db.getCollectionNames().length",
+                                               0, maxNumber);
         }
         return collectionNumber;
     }
