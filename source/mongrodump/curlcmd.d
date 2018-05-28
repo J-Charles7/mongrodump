@@ -36,6 +36,8 @@ struct CurlRequest {
     this(string[] args) {
         import std.getopt;
         import std.typecons: tuple;
+        import std.string: stripLeft;
+
 
         enforce(args.length != 0, "Command line can't be empty");
 
@@ -51,7 +53,7 @@ struct CurlRequest {
 
         headerList.map!(h => h.split(":"))
                   .filter!(p => p.length >= 2)
-                  .each!(p => headers[p[0]] = p[1..$].join(":"));
+                  .each!(p => headers[p[0]] = p[1..$].join(":").stripLeft);
 
         url = args[1..$].filter!(arg => arg.canFind("://")).takeOne.join("");
         enforce(url != "", "URL can't be empty");
@@ -66,7 +68,7 @@ unittest {
              -H $'Upgrade-Insecure-Requests: 1' \
              -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64)' \
              -H 'Accept: text/html,application/xhtml+xml;q=0.9,*/*' \
-             -H "X-Do-Not-Track: 1" \
+             -H "X-Do-Not-Track:1" \
              --header 'DNT: 1' \
              -H='Accept-Language: en-US,en' \
              --header='Referer: https://example.com/?q=referer' \
@@ -102,6 +104,9 @@ unittest {
     assert(request.data    == expected.data);
 
     assertThrown!Exception(CurlRequest("no url present").url);
+
+    CurlRequest tmp = expected;
+    assert(tmp.headers == expected.headers);
 }
 
 /**
