@@ -18,14 +18,15 @@ class Database {
     /** Builds with a given oracle */
     this(Oracle oracle) {
         this.oracle = oracle;
+        collectionNumber = getCollectionNumber();
     }
 
     /** Number of collections existing in the database */
     ulong getCollectionNumber(ulong maxNumber=10_000) {
-        if (collectionNumber == 0)
-            collectionNumber = getCollectionNumber();
-
-        return oracle.getValue("db.getCollectionNames().length", 0, maxNumber);
+        if (collectionNumber == 0) {
+            oracle.getValue("db.getCollectionNames().length", 0, maxNumber);
+        }
+        return collectionNumber;
     }
 
     /** Name of the index-th collection */
