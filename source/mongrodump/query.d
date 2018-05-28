@@ -78,23 +78,28 @@ class TestQuery: WebQuery {
 struct InjectionPoint {
     enum Location { None, Url, Header, Data };
 
-    Location location;
+    Location location = Location.None;
     string   headerName;
     string   flag;
 
     this(CurlRequest req, string flag) {
         this.flag = flag;
 
-        if (req.url.canFind(flag))
+        if (req.url.canFind(flag)) {
             location = Location.Url;
+            return;
+        }
 
-        if (req.data.canFind(flag))
+        if (req.data.canFind(flag)) {
             location = Location.Data;
+            return;
+        }
 
         foreach (header ; req.headers) {
             if (req.headers[header].canFind(flag)) {
                 location   = Location.Header;
                 headerName = header;
+                return;
             }
         }
 
