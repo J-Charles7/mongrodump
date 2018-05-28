@@ -17,6 +17,7 @@ class WebQuery: Query {
     /** Builds a query from a curl request */
     this(CurlRequest cmd, string flag) {
         curlRequest = cmd;
+        curlRequest.headers.remove("Content-Length");
         injectionPoint = InjectionPoint(curlRequest, flag);
     }
 
