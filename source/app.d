@@ -73,8 +73,6 @@ int main(string[] args) {
 
     string curlCommand = File(requestFile).byLine.join("\n").to!string;
 
-    writeln(curlCommand);
-
     auto query  = new WebQuery(curlCommand, flag);
     auto oracle = new Oracle(query, trueReg, falseReg);
     auto db     = new Database(oracle);
