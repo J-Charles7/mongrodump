@@ -49,9 +49,9 @@ struct CurlRequest {
                     "data-binary", &data,
                     );
 
-        headerList.map!(h => h.split(": "))
-                  .filter!(p => p.length == 2)
-                  .each!(p => headers[p[0]] = p[1]);
+        headerList.map!(h => h.split(":"))
+                  .filter!(p => p.length >= 2)
+                  .each!(p => headers[p[0]] = p[1..$].join(":"));
 
         url = args[1..$].filter!(arg => arg.canFind("://")).takeOne.join("");
         enforce(url != "", "URL can't be empty");
