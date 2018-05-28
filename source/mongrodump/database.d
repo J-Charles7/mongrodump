@@ -36,8 +36,8 @@ class Database {
 
     /** All collection names from the database */
     string[] getCollections() {
-        if (collections.length != 0)
-            for (ulong i ; i<getCollectionNumber ; i++)
+        if (collections.length == 0)
+            for (ulong i ; i<collectionNumber ; i++)
                 collections ~= getCollectionName(i);
         return collections;
     }
