@@ -3,6 +3,7 @@ module mongrodump.oracle;
 import std.format;
 import std.regex;
 
+import mongrodump.logger;
 import mongrodump.query;
 
 enum OracleAnswer { Error, No, Yes }
@@ -43,11 +44,19 @@ class Oracle {
         auto payload  = format("%s%s%s", prefix, question, suffix);
         auto response = query.send(payload);
 
-        if (response.matchFirst(isTrue))
+        if (response.matchFirst(isTrue)) {
+            log(4, "[T] " ~ payload);
             return OracleAnswer.Yes;
-        else if (response.matchFirst(isFalse))
+        }
+
+        else if (response.matchFirst(isFalse)) {
+            log(4, "[F] " ~ payload);
             return OracleAnswer.No;
-        else
+        }
+
+        else {
+            log(4, "[E] " ~ payload);
             return OracleAnswer.Error;
+        }
     }
 }

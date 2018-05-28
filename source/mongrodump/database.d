@@ -1,7 +1,9 @@
 module mongrodump.database;
 
+import std.conv;
 import std.format;
 
+import mongrodump.logger;
 import mongrodump.query;
 import mongrodump.oracle;
 
@@ -26,13 +28,18 @@ class Database {
         if (collectionNumber == 0) {
             collectionNumber = oracle.getValue("db.getCollectionNames().length",
                                                0, maxNumber);
+            log(2, "[-] Number of collections: " ~ collectionNumber.to!string);
         }
         return collectionNumber;
     }
 
     /** Name of the index-th collection */
     string getCollectionName(ulong index) {
-        return oracle.getString("db.getCollectionNames()[%s]".format(index));
+        string name = oracle.getString("db.getCollectionNames()[%s]"
+                            .format(index));
+
+        log(2, "[-] Collections: " ~ name);
+        return name;
     }
 
     /** All collection names from the database */
@@ -51,14 +58,20 @@ class Database {
 
     /** Full content of a collection in the form of a JSON string */
     ulong getCollectionSize(string collection, ulong maxSize=10_000) {
-        return oracle.getValue("db.%s.find().length".format(collection),
-                               0, maxSize);
+        ulong size = oracle.getValue("db.%s.find().length".format(collection),
+                                     0, maxSize);
+
+        log(2, "[-] Size of " ~ collection ~ ": " ~ size.to!string);
+        return size;
     }
 
     /** Full content of a collection element in the form of a JSON string */
     string getCollectionElement(string collection, ulong index) {
-        return oracle.getString("tojsononeline(db.%s.find()[%d])"
-                                .format(collection, index));
+        string element = oracle.getString("tojsononeline(db.%s.find()[%d])"
+                                          .format(collection, index));
+
+        log(2, "[-] Element: " ~ element);
+        return element;
     }
 }
 
@@ -174,9 +187,17 @@ char getChar(Oracle oracle, string what) {
 string getString(Oracle oracle, string what, ulong maxValue=1_000_000_000) {
     immutable length = oracle.getValue("%s.length".format(what), 0, maxValue);
 
+    auto logger = Logger.get();
+
     string result;
-    for (ulong i ; i<length ; i++)
-        result ~= cast(char) oracle.getChar("%s[%d]".format(what, i));
+    for (ulong i ; i<length ; i++) {
+        char c = cast(char) oracle.getChar("%s[%d]".format(what, i));
+        if (logger.verbosity >= 3) {
+            logger.outputFile.write(c);
+            logger.outputFile.flush();
+        }
+        result ~= c;
+    }
 
     return result;
 }

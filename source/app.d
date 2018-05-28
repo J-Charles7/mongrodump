@@ -4,6 +4,7 @@ import std.algorithm;
 import std.array;
 import std.conv;
 
+import mongrodump.logger;
 import mongrodump.database;
 import mongrodump.query;
 import mongrodump.oracle;
@@ -26,6 +27,7 @@ Options:
     -d, --dump WHAT         What to dump. If not used, dumps the collection
                             names, otherwise dumps the given collection.
     -F, --flag FLAG         Injection flag to use; default: #MONGRODUMP#
+    -V, --verbosity LEVEL   Set the verbosity level. Default is 2.
 ";
 
 immutable vernum="0.0.1";
@@ -35,6 +37,7 @@ int main(string[] args) {
     import std.stdio;
     import std.getopt: GetOptException;
 
+    Level  verbosity = 1;
     string trueReg;
     string falseReg;
     string requestFile;
@@ -48,15 +51,13 @@ int main(string[] args) {
         auto arguments = getopt(args,
                                 config.bundling,
                                 config.caseSensitive,
-                                config.required,
-                                "r|request", &requestFile,
-                                config.required,
-                                "t|true",    &trueReg,
-                                config.required,
-                                "f|false",   &falseReg,
-                                "d|dump",    &toDump,
-                                "F|flag",    &flag,
-                                "v|version", &versionWanted);
+                                config.required, "r|request", &requestFile,
+                                config.required, "t|true",    &trueReg,
+                                config.required, "f|false",   &falseReg,
+                                "d|dump",      &toDump,
+                                "F|flag",      &flag,
+                                "V|verbosity", &verbosity,
+                                "v|version",   &versionWanted);
 
         if (arguments.helpWanted) {
             write(helpMsg);
@@ -71,6 +72,10 @@ int main(string[] args) {
         return 1;
     }
 
+    Logger logger     = Logger.get();
+    logger.visibility = verbosity;
+    logger.outputFile = std.stdio.stdout;
+
     string curlCommand = File(requestFile).byLine.join("\n").to!string;
 
     auto query  = new WebQuery(curlCommand, flag);
@@ -78,9 +83,12 @@ int main(string[] args) {
     auto db     = new Database(oracle);
 
     if (toDump.length == 0) {
+        log(1, "[+] Dumping collection list");
+        log(2, "[+] Number of collections:" ~ db.getCollectionNumber.to!string);
         db.getCollections().each!writeln;
     }
     else {
+        log(1, "[+] Dumping " ~ toDump);
         db.getCollectionData(toDump).writeln;
     }
 
