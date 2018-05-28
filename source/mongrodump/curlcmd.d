@@ -26,6 +26,10 @@ struct CurlRequest {
         this(cmdLineToArgv(cmdLine));
     }
 
+    this(this) {
+        headers = headers.dup;
+    }
+
     /**
      * Builds a CurlRequest from a curl command line arguments.
      */
