@@ -111,16 +111,16 @@ struct InjectionPoint {
 
         final switch (location) {
             case Location.Url:
-                result.url = req.url.replace(flag, data);
+                result.url = req.url.encode(flag, data);
                 break;
 
             case Location.Data:
-                result.data = req.data.replace(flag, data);
+                result.data = req.data.encode(flag, data);
                 break;
 
             case Location.Header:
                 result.headers[headerName] = req.headers[headerName]
-                                                .replace(flag, data);
+                                                .encode(flag, data);
                 break;
 
             case Location.None:
@@ -129,4 +129,21 @@ struct InjectionPoint {
 
         return result;
     }
+}
+
+string encode(string input, string flag, string data) {
+    import std.uri: encode, decodeComponent;
+    return input.decodeComponent
+                .replace(flag, data)
+                .encode
+                .replace(";", "%3B");
+}
+unittest {
+    string input = "CompanyName=',%20#MONGRODUMP#%20;//";
+    string flag  = "#MONGRODUMP#";
+    string data  = "(db.getCollectionNames().length) >= (156)";
+
+    assert(encode(input, flag, data) ==
+     "CompanyName=',%20(db.getCollectionNames().length)%20%3E=%20(156)%20%3B//",
+    );
 }
