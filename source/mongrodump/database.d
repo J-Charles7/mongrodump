@@ -66,11 +66,12 @@ class Database {
  * Builds the part of the request comparing two numerical values.
  */
 string greaterThan(T)(string what, T value) {
-    return format("(%s) >= (%s)", what, cast(long)value);
+    import std.conv;
+    return format("(%s) >= (%s)", what, value.to!string);
 }
 unittest {
     assert("id".greaterThan(15)  == "(id) >= (15)");
-    assert("id".greaterThan('a') == "(id) >= (97)");
+    assert("id".greaterThan("'a'") == "(id) >= ('a')");
 }
 
 /**
@@ -118,11 +119,51 @@ unittest {
     query.answer = 97;
     assert(oracle.getValue("none", 0, 200) == 0);
     assert(oracle.getValue("id",   0, 200) == 97);
-    assert(oracle.getValue("id", 'a', 'z') == 'a');
 
     query.answer = 'z';
-    assert(oracle.getValue("id",   0, 200) == 122);
-    assert(oracle.getValue("id", 'a', 'z') == 'z');
+    assert(oracle.getValue("id", 0, 200) == 122);
+}
+
+char getChar(Oracle oracle, string what) {
+    char from = char.min;
+    char to   = char.max;
+
+    while (true) {
+        char pivot = cast(char)(from + (to - from) / 2);
+
+        if (pivot == from) {
+            string value = format("'%c'", to);
+            if (value == "'''")
+                value = "'\\''";
+
+            final switch (oracle.ask(what.greaterThan(value))) {
+                case OracleAnswer.Yes:
+                    return to;
+                case OracleAnswer.No:
+                    return from;
+                case OracleAnswer.Error:
+                    return 0;
+            }
+        }
+        else {
+            string value = format("'%c'", pivot);
+            if (value == "'''")
+                value = "'\\''";
+
+            final switch (oracle.ask(what.greaterThan(value))) {
+                case OracleAnswer.Yes:
+                    from = pivot;
+                    break;
+
+                case OracleAnswer.No:
+                    to = pivot;
+                    break;
+
+                case OracleAnswer.Error:
+                    return 0;
+            }
+        }
+    }
 }
 
 /**
@@ -135,7 +176,7 @@ string getString(Oracle oracle, string what, ulong maxValue=1_000_000_000) {
 
     string result;
     for (ulong i ; i<length ; i++)
-        result ~= cast(char) oracle.getValue("%s[%d]".format(what, i), 0, 128);
+        result ~= cast(char) oracle.getChar("%s[%d]".format(what, i));
 
     return result;
 }
