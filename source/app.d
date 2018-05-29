@@ -48,11 +48,11 @@ int main(string[] args) {
         import std.getopt;
         bool versionWanted;
 
-        immutable arguments = getopt(args,
-                                     config.bundling,
-                                     config.caseSensitive,
-                                     config.passThrough,
-                                     "v|version", &versionWanted);
+        const arguments = getopt(args,
+                                 config.bundling,
+                                 config.caseSensitive,
+                                 config.passThrough,
+                                 "v|version", &versionWanted);
 
         if (versionWanted) {
             writeln(vernum);
