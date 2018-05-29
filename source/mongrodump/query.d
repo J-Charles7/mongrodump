@@ -42,17 +42,25 @@ class WebQuery: Query {
 
         HTTPResponse r;
 
-        if (toSend.method == "GET")
-            r =req.get(toSend.url);
+        bool retry = true;
+        while (retry) {
+            try {
+                if (toSend.method == "GET")
+                    r =req.get(toSend.url);
 
-        else if (toSend.method == "POST")
-            r =req.exec!"POST"(toSend.url, toSend.data);
+                else if (toSend.method == "POST")
+                    r =req.exec!"POST"(toSend.url, toSend.data);
 
-        else if (toSend.method == "PUT")
-            r =req.exec!"PUT"(toSend.url, toSend.data);
+                else if (toSend.method == "PUT")
+                    r =req.exec!"PUT"(toSend.url, toSend.data);
 
-        else if (toSend.method == "PATCH")
-            r =req.exec!"PATCH"(toSend.url, toSend.data);
+                else if (toSend.method == "PATCH")
+                    r =req.exec!"PATCH"(toSend.url, toSend.data);
+
+                retry = false;
+            }
+            catch (TimeoutException) {}
+        }
 
         return r.responseBody.to!string;
     }

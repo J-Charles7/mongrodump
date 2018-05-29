@@ -16,10 +16,12 @@ class Database {
     ulong    collectionNumber;
     string[] collections;
     Oracle   oracle;
+    uint     threads;
 
     /** Builds with a given oracle */
-    this(Oracle oracle) {
-        this.oracle = oracle;
+    this(Oracle oracle, uint threads) {
+        this.oracle  = oracle;
+        this.threads = threads;
     }
 
     /** Number of collections existing in the database */
@@ -188,20 +190,30 @@ char getChar(Oracle oracle, string what) {
  *
  * By default, only supports strings shorter than maxValue characters.
  */
-string getString(Oracle oracle, string what, ulong maxValue=1_000_000_000) {
-    immutable length = oracle.getValue("%s.length".format(what), 0, maxValue);
+string getString(Oracle oracle,
+                 string what,
+                 ulong  maxValue=1_000_000_000,
+                 uint   threads=10)
+{
+    import std.parallelism;
 
-    auto logger = Logger.get();
+    immutable length = cast(size_t) oracle.getValue("%s.length".format(what),
+                                                    0, maxValue);
 
-    string result;
-    for (ulong i ; i<length ; i++) {
+    log(2, "[-] String length: " ~ length.to!string);
+
+    Logger    logger = Logger.get();
+    char[]    result = new char[length];
+
+    std.parallelism.defaultPoolThreads = threads;
+    foreach (i, index ; result.parallel(length / threads)) {
         char c = cast(char) oracle.getChar("%s[%d]".format(what, i));
         if (logger.verbosity >= 3) {
             logger.outputFile.write(c);
             logger.outputFile.flush();
         }
-        result ~= c;
+        result[i] = c;
     }
 
-    return result;
+    return result.to!string;
 }

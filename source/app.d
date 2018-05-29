@@ -27,6 +27,7 @@ Options:
     -d, --dump WHAT         What to dump. If not used, dumps the collection
                             names, otherwise dumps the given collection.
     -F, --flag FLAG         Injection flag to use; default: #MONGRODUMP#
+    -T, --threads NUM       Use NUM threads. Default is 5.
     -V, --verbosity LEVEL   Set the verbosity level. Default is 2.
 ";
 
@@ -43,6 +44,7 @@ int main(string[] args) {
     string requestFile;
     string toDump;
     string flag = "#MONGRODUMP#";
+    uint   threads = 5;
 
     try {
         import std.getopt;
@@ -72,6 +74,7 @@ int main(string[] args) {
                config.required, "f|false",   &falseReg,
                "d|dump",      &toDump,
                "F|flag",      &flag,
+               "T|threads",   &threads,
                "V|verbosity", &verbosity);
 
     } catch (GetOptException ex) {
@@ -87,7 +90,7 @@ int main(string[] args) {
 
     auto query  = new WebQuery(curlCommand, flag);
     auto oracle = new Oracle(query, trueReg, falseReg);
-    auto db     = new Database(oracle);
+    auto db     = new Database(oracle, threads);
 
     if (toDump.length == 0) {
         log(1, "[+] Dumping collection list");

@@ -9,5 +9,6 @@
     },
     "description": "MongoDB Exploitation Tool",
     "copyright": "Copyright © 2018, Cédric Picard",
-    "license": "GPLv3"
+    "license": "GPLv3",
+    "versions": ["StdLoggerDisableLogging"]
 }
