@@ -92,11 +92,17 @@ int main(string[] args) {
     if (toDump.length == 0) {
         log(1, "[+] Dumping collection list");
         log(2, "[+] Number of collections:" ~ db.getCollectionNumber.to!string);
-        db.getCollections().each!writeln;
+        db.getCollections().each!(name => log(1, name));
     }
     else {
         log(1, "[+] Dumping " ~ toDump);
-        db.getCollectionData(toDump).writeln;
+        for (ulong i ; ; i++) {
+            import std.string: strip;
+
+            string element = db.getCollectionElement(toDump, i);
+            if (element.strip.length == 0)
+                break;
+        }
     }
 
     return 0;
