@@ -20,7 +20,6 @@ class Database {
     /** Builds with a given oracle */
     this(Oracle oracle) {
         this.oracle = oracle;
-        collectionNumber = getCollectionNumber();
     }
 
     /** Number of collections existing in the database */
@@ -44,6 +43,11 @@ class Database {
 
     /** All collection names from the database */
     string[] getCollections() {
+        if (collectionNumber == 0) {
+            log(1, "[+] Get number of collections");
+            collectionNumber = getCollectionNumber();
+        }
+
         if (collections.length == 0)
             for (ulong i ; i<collectionNumber ; i++)
                 collections ~= getCollectionName(i);
