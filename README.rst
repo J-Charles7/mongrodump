@@ -26,6 +26,7 @@ Usage
         -d, --dump WHAT         What to dump. If not used, dumps the collection
                                 names, otherwise dumps the given collection.
         -F, --flag FLAG         Injection flag to use; default: #MONGRODUMP#
+        -V, --verbosity LEVEL   Set the verbosity level. Default is 2.
 
 
 Dependencies

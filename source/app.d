@@ -37,7 +37,7 @@ int main(string[] args) {
     import std.stdio;
     import std.getopt: GetOptException;
 
-    Level  verbosity = 1;
+    Level  verbosity = 2;
     string trueReg;
     string falseReg;
     string requestFile;
@@ -73,7 +73,7 @@ int main(string[] args) {
     }
 
     Logger logger     = Logger.get();
-    logger.visibility = verbosity;
+    logger.verbosity  = verbosity;
     logger.outputFile = std.stdio.stdout;
 
     string curlCommand = File(requestFile).byLine.join("\n").to!string;
