@@ -48,25 +48,32 @@ int main(string[] args) {
         import std.getopt;
         bool versionWanted;
 
-        auto arguments = getopt(args,
-                                config.bundling,
-                                config.caseSensitive,
-                                config.required, "r|request", &requestFile,
-                                config.required, "t|true",    &trueReg,
-                                config.required, "f|false",   &falseReg,
-                                "d|dump",      &toDump,
-                                "F|flag",      &flag,
-                                "V|verbosity", &verbosity,
-                                "v|version",   &versionWanted);
+        immutable arguments = getopt(args,
+                                     config.bundling,
+                                     config.caseSensitive,
+                                     config.passThrough,
+                                     "v|version", &versionWanted);
+
+        if (versionWanted) {
+            writeln(vernum);
+            return 0;
+        }
 
         if (arguments.helpWanted) {
             write(helpMsg);
             return 0;
         }
-        if (versionWanted) {
-            writeln(vernum);
-            return 0;
-        }
+
+        getopt(args,
+               config.bundling,
+               config.caseSensitive,
+               config.required, "r|request", &requestFile,
+               config.required, "t|true",    &trueReg,
+               config.required, "f|false",   &falseReg,
+               "d|dump",      &toDump,
+               "F|flag",      &flag,
+               "V|verbosity", &verbosity);
+
     } catch (GetOptException ex) {
         stderr.write(helpMsg);
         return 1;
