@@ -103,7 +103,7 @@ int main(string[] args) {
             import std.string: strip;
 
             string element = db.getCollectionElement(toDump, i);
-            if (element.strip.length == 0)
+            if (element == "undefined")
                 break;
         }
     }
