@@ -31,7 +31,7 @@ Options:
     -V, --verbosity LEVEL   Set the verbosity level. Default is 2.
 ";
 
-immutable vernum="0.0.1";
+immutable vernum="1.0.0";
 
 
 int main(string[] args) {
