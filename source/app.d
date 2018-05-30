@@ -31,7 +31,7 @@ Options:
     -V, --verbosity LEVEL   Set the verbosity level. Default is 2.
 ";
 
-immutable vernum="1.0.0";
+immutable vernum="1.0.1";
 
 
 int main(string[] args) {
@@ -94,7 +94,6 @@ int main(string[] args) {
 
     if (toDump.length == 0) {
         log(1, "[+] Dumping collection list");
-        log(2, "[+] Number of collections:" ~ db.getCollectionNumber.to!string);
         db.getCollections().each!(name => log(1, name));
     }
     else {

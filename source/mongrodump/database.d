@@ -206,7 +206,7 @@ string getString(Oracle oracle,
     ubyte[] result = new ubyte[length];
 
     std.parallelism.defaultPoolThreads = threads;
-    foreach (i, index ; result.parallel(length / threads)) {
+    foreach (i, index ; result.parallel(length / threads + 1)) {
         char c = cast(char) oracle.getChar("%s[%d]".format(what, i));
         if (logger.verbosity >= 3) {
             logger.outputFile.write(c);
