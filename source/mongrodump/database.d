@@ -202,8 +202,8 @@ string getString(Oracle oracle,
 
     log(2, "[-] String length: " ~ length.to!string);
 
-    Logger    logger = Logger.get();
-    char[]    result = new char[length];
+    Logger  logger = Logger.get();
+    ubyte[] result = new ubyte[length];
 
     std.parallelism.defaultPoolThreads = threads;
     foreach (i, index ; result.parallel(length / threads)) {
@@ -215,5 +215,5 @@ string getString(Oracle oracle,
         result[i] = c;
     }
 
-    return result.to!string;
+    return cast(string)result;
 }
